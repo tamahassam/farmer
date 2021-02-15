@@ -39,7 +39,6 @@ def predict_on_video(
     video.release()
     writer.release()
 
-
 def _to_frame(time, fps):
     time_list = time.split(":")
     if len(time_list) == 3:

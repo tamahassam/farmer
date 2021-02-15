@@ -69,7 +69,7 @@ def classification_video_set(
                     start_time = _str_time_to_frame(start_time, fps)
                     end_time = _str_time_to_frame(end_time, fps)
                 else:
-                    start_time, end_time = int(start_time), int(end_time)
+                    start_time, end_time = int(float(start_time)), int(float(end_time))
                 annotations.extend(
                     [
                         [video_path, frame, class_id]

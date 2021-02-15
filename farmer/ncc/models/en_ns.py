@@ -1,11 +1,12 @@
+from efficientnet.tfkeras import EfficientNetB7
+# from efficientnet.tfkeras import center_crop_and_resize, preprocess_input
+
 import tensorflow as tf
-# import tensorflow.keras.applications.efficientnet as en
-from tensorflow.keras.applications import EfficientNetB7
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
 
 
-def EfficientNet(model_name, nb_classes, height, width):
+def en_ns(model_name, nb_classes, height, width):
     # model_name_converted = model_name.replace('efficientnetb', 'EfficientNetB')
 
     with tf.device("/cpu:0"):
@@ -13,7 +14,7 @@ def EfficientNet(model_name, nb_classes, height, width):
         base_model = EfficientNetB7(
             include_top=False,
             input_shape=(height, width, 3),
-            weights='imagenet'
+            weights='noisy-student'
         )
         x = base_model.output
         x = GlobalAveragePooling2D()(x)

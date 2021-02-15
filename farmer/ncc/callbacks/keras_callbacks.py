@@ -6,7 +6,7 @@ import warnings
 from ..utils import PostClient, MatPlotManager
 from ..metrics import iou_dice_val, generate_segmentation_result
 
-from tensorflow import keras
+from tensorflow import keras, saved_model
 
 
 class BatchCheckpoint(keras.callbacks.Callback):
@@ -46,6 +46,7 @@ class BatchCheckpoint(keras.callbacks.Callback):
         if (batch + 1) % self.period != 0:
             return
         self.model.save(self.filepath)
+        # saved_model.save(self.model, self.filepath) # BiTのために追加された
         new_metric = [
             logs.get('acc'),
             logs.get('loss')

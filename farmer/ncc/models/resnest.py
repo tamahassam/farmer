@@ -1,3 +1,5 @@
+# https://github.com/QiaoranC/tf_ResNeSt_RegNet_model
+
 import tensorflow as tf
 # tf.enable_eager_execution()
 # tf.compat.v1.enable_eager_execution()
@@ -17,6 +19,10 @@ from tensorflow.keras.layers import (
     MaxPool2D,
     UpSampling2D,
 )
+
+# https://github.com/QiaoranC/tf_ResNeSt_RegNet_model/issues/11
+import sys
+sys.setrecursionlimit(10000)
 
 
 def get_flops(model):
@@ -379,7 +385,7 @@ class ResNest:
         if self.preact is True:
             x = BatchNormalization(axis=self.channel_axis, epsilon=1.001e-5)(x)
             x = Activation(self.active)(x)
-        
+
         if self.using_cb:
             second_x = x
             second_x = self._make_layer(x, blocks=self.blocks_set[0], filters=64, stride=1, is_first=False)
@@ -401,7 +407,7 @@ class ResNest:
             x = self._make_layer(x, blocks=self.blocks_set[idx], filters=b1_b3_filters[idx], stride=2)
             if self.verbose: print('----- layer {} out {} -----'.format(idx,x.shape))
 
-        x = GlobalAveragePooling2D(name='avg_pool')(x) 
+        x = GlobalAveragePooling2D(name='avg_pool')(x)
         if self.verbose:
             print("pool_out:", x.shape) # remove the concats var
 
@@ -464,3 +470,19 @@ def resnest(model_name='ResNest50', height=224, width=224, nb_classes=81,
 
 
     return model
+
+if __name__ == "__main__":
+
+    # model_names = ['ResNest50','ResNest101','ResNest200','ResNest269']
+    model_names = ['ResNest269']
+    # model_names = ['RegNetX400','RegNetX1.6','RegNetY400','RegNetY1.6']
+    height = 224
+    width = 244
+    n_classes=11
+    fc_activation='softmax' #softmax sigmoid
+
+    for model_name in model_names:
+        print('model_name',model_name)
+        model = resnest(model_name=model_name,height=height,width=width,nb_classes=n_classes,
+                    verbose=True,fc_activation=fc_activation)
+        print('-'*10)

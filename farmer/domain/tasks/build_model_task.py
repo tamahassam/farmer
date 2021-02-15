@@ -1,4 +1,4 @@
-import segmentation_models
+# import segmentation_models
 
 from farmer.ncc.optimizers import AdaBound
 from farmer.ncc import losses, models
@@ -84,14 +84,33 @@ class BuildModelTask:
                     height=height,
                     width=width,
                 )
-            elif model_name.startswith('resnest'):
-                model = models.resnest(
-                    nb_classes=nb_classes,
+
+            elif model_name == "en_ns":
+                model = models.en_ns(
                     model_name=model_name,
+                    nb_classes=nb_classes,
                     height=height,
                     width=width,
                 )
+
+            elif model_name.startswith('resnest'):
+                model = models.resnest(
+                    nb_classes=nb_classes,
+                    # model_name=model_name,
+                    height=height,
+                    width=width,
+                )
+
+            elif model_name.startswith('bit_m_r152x4'):
+                model = models.bit_m_r152x4(
+                    nb_classes=nb_classes,
+                    # model_name=model_name,
+                    # height=height,
+                    # width=width,
+                )
+
             else:
+                print('No model is loaded!')
                 model = models.Model2D(nb_classes, height, width)
 
         elif task == Task.SEMANTIC_SEGMENTATION:
@@ -203,6 +222,19 @@ class BuildModelTask:
             if task_id == Task.CLASSIFICATION:
                 for i, loss_func in enumerate(loss_funcs.items()):
                     loss_name, params = loss_func
+                    '''
+                    # CategoricalFocalLossを使いたい時はこっち
+                    if i == 0:
+                        if params is None:
+                            loss = getattr(losses, loss_name)()
+                        else:
+                            loss = getattr(losses, loss_name)(**params)
+                    else:
+                        if params is None:
+                            loss += getattr(losses, loss_name)()
+                        else:
+                            loss += getattr(losses, loss_name)(**params)
+                    '''
                     if i == 0:
                         if params is None:
                             loss = getattr(keras.losses, loss_name)()

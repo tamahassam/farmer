@@ -9,8 +9,6 @@ config_paths:
     - yamls/segmentation.yaml
     - yamls/segmentation-eval.yaml
     - yamls/segmentation-optuna.yaml
-    # detection #bug 
+    # detection #bug
     # - yamls/detection.yaml
-    # - yamls/detection-eval.yaml
-
 overwrite: yes

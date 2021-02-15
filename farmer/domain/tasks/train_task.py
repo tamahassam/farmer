@@ -190,6 +190,22 @@ class TrainTask:
                 batch_size=self.config.train_params.batch_size,
                 shuffle=False
             )
+
+        '''
+        else:
+            tain_gen = tf.keras.preprocessing.image.ImageDataGenerator.flow(
+                train_dataset[0],
+                train_dataset[1],
+                batch_size=self.config.train_params.batch_size,
+                shuffle=True
+            )
+            valid_gen = tf.keras.preprocessing.image.ImageDataGenerator.flow(
+                val_dataset[0],
+                val_dataset[1],
+                batch_size=self.config.train_params.batch_size,
+                shuffle=False
+            )
+
         else:
             val_data = [d for d in val_dataset]
             train_data = [d for d in train_dataset]
@@ -202,6 +218,7 @@ class TrainTask:
                     self.config.train_params.batch_size
             )
             valid_gen = valid_ds.batch(self.config.train_params.batch_size)
+        '''
 
         class_weights = self.config.train_params.classification_class_weight
 
