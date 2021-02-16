@@ -7,6 +7,8 @@ from ..model.task_model import Task
 from tensorflow import keras
 import tensorflow_addons as tfa
 
+from torch.cuda.amp import autocast, GradScaler
+
 
 class BuildModelTask:
     def __init__(self, config):
@@ -24,16 +26,17 @@ class BuildModelTask:
             backbone=self.config.train_params.backbone,
             activation=self.config.train_params.activation
         )
-        model = self._do_load_model_task(
-            model, self.config.trained_model_path
-        )
-        model = self._do_compile_model_task(
-            model,
-            self.config.train_params.optimizer,
-            self.config.train_params.learning_rate,
-            self.config.task,
-            self.config.train_params.loss
-        )
+        if self.config.framework == "tensorflow":
+            model = self._do_load_model_task(
+                model, self.config.trained_model_path
+            )
+            model = self._do_compile_model_task(
+                model,
+                self.config.train_params.optimizer,
+                self.config.train_params.learning_rate,
+                self.config.task,
+                self.config.train_params.loss
+            )
 
         return model
 
@@ -51,7 +54,14 @@ class BuildModelTask:
             xception_shape_condition = height >= 71 and width >= 71
             mobilenet_shape_condition = height >= 32 and width >= 32
 
-            if model_name == "xception" and xception_shape_condition:
+            if self.config.framework == "pytorch":
+                model = model = pytorchImgClassifier(
+                    model_arch=model_name,
+                    n_class=nb_classes,
+                    pretrained=True
+                    )
+
+            elif model_name == "xception" and xception_shape_condition:
                 model = models.xception(
                     nb_classes=nb_classes,
                     height=height,
@@ -271,4 +281,13 @@ class BuildModelTask:
                     ],
 
             model.compile(optimizer, loss, metrics)
+
+        elif self.config.framework == "pytorch":
+
+            print('------------------')
+            print('Optimizer:', optimizer)
+            print('------------------')
+            if optimizer == "adam":
+
+
         return model

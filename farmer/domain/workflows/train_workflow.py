@@ -11,6 +11,9 @@ from ..tasks.output_result_task import OutputResultTask
 from ..model.task_model import Task
 import tensorflow as tf
 
+import torch
+import torch.nn as nn
+import torch.backends.cudnn as cudnn
 
 class TrainWorkflow(AbstractImageAnalyzer):
     def __init__(self, config, trial=None):
@@ -50,11 +53,18 @@ class TrainWorkflow(AbstractImageAnalyzer):
             # this flow is skipped for object detection at this moment
             # keras-retina command build model in model execution flow
             return None, None
-        if self._config.multi_gpu:
-            with tf.distribute.MirroredStrategy().scope():
+        if self._config.framework == "tensorflow":
+            if self._config.multi_gpu:
+                with tf.distribute.MirroredStrategy().scope():
+                    model = BuildModelTask(self._config).command()
+            else:
                 model = BuildModelTask(self._config).command()
-        else:
-            model = BuildModelTask(self._config).command()
+        elif self._config.framework == "pytorch":
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+            cudnn.benchmark = True
+            model = BuildModelTask(self._config).command().to(device)
+            if self._config.multi_gpu:
+                model = DataParallel(model)
         print("DONE\n")
         return model
 
