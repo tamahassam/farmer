@@ -186,59 +186,32 @@ class pytorchClassificationDataset(data.Dataset):
         学習か訓練かを設定する。
     """
 
-    def __init__(self, file_list, transform=None, phase='train'):
-        self.file_list = file_list  # ファイルパスのリスト
+    def __init__(
+        self,
+        annotations: list,
+        input_shape: Tuple[int, int],
+        nb_classes: int,
+        # augmentation: list = list(),
+        input_data_type: str = "image",
+        transform=None,
+        phase='train',
+        **kwargs
+    ):
+        self.annotations = annotations
+        self.input_shape = input_shape
+        self.image_util = ImageUtil(nb_classes, input_shape)
+        # self.augmentation = augmentation
         self.transform = transform  # 前処理クラスのインスタンス
         self.phase = phase  # train or valの指定
 
     def __len__(self):
         '''画像の枚数を返す'''
-        return len(self.file_list)
+        return len(self.annotations)
 
     def __getitem__(self, index):
         '''
         前処理をした画像のTensor形式のデータとラベルを取得
         '''
-
-        # index番目の画像をロード
-        img_path = self.file_list[index]
-        img = Image.open(img_path)  # [高さ][幅][色RGB]
-
-        # 画像の前処理を実施
-        img_transformed = self.transform(
-            img, self.phase)  # torch.Size([3, 224, 224])
-
-        # 画像のラベルをファイル名から抜き出す
-        if self.phase == "train":
-            label = img_path[30:34]
-        elif self.phase == "val":
-            label = img_path[28:32]
-
-        # ラベルを数値に変更する
-        if label == "ants":
-            label = 0
-        elif label == "bees":
-            label = 1
-
-        return img_transformed, label
-
-        def __init__(
-            self,
-            annotations: list,
-            input_shape: Tuple[int, int],
-            nb_classes: int,
-            augmentation: list = list(),
-            input_data_type: str = "image",
-            **kwargs
-    ):
-
-        self.annotations = annotations
-        self.input_shape = input_shape
-        self.image_util = ImageUtil(nb_classes, input_shape)
-        self.augmentation = augmentation
-        self.input_data_type = input_data_type
-
-    def __getitem__(self, i):
 
         # input_file is [image_path] or [video_path, frame_id]
         # label is class_id
@@ -259,20 +232,9 @@ class pytorchClassificationDataset(data.Dataset):
             input_image = self.image_util.read_image(input_file[0])
 
         # apply preprocessing
-        input_image = self.image_util.resize(input_image, anti_alias=True)
-        input_image = self.image_util.normalization(input_image)
+        img_transformed = self.transform(
+            img, self.phase)  # torch.Size([3, 224, 224])
         label = self.image_util.cast_to_onehot(label)
 
-        # apply augmentations
-        if self.augmentation and len(self.augmentation) > 0:
-            input_image, label = classification_aug(
-                input_image, label,
-                self.mean, self.std,
-                self.augmentation,
-                self.augmix
-            )
-
-        return input_image, label
-
-    def __len__(self):
-        return len(self.annotations)
+        return img_transformed, label
+        
