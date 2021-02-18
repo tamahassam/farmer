@@ -7,9 +7,6 @@ from ..model.task_model import Task
 from tensorflow import keras
 import tensorflow_addons as tfa
 
-from torch.cuda.amp import autocast, GradScaler
-
-
 class BuildModelTask:
     def __init__(self, config):
         self.config = config
@@ -283,11 +280,6 @@ class BuildModelTask:
             model.compile(optimizer, loss, metrics)
 
         elif self.config.framework == "pytorch":
-
-            print('------------------')
-            print('Optimizer:', optimizer)
-            print('------------------')
-            if optimizer == "adam":
-
-
+            pass
+        
         return model
