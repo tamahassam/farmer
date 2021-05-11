@@ -1,7 +1,7 @@
 FROM tensorflow/tensorflow:2.3.0-gpu
 
 RUN apt-get update
-RUN apt-get install -y python3-venv vim libgl1-mesa-dev
+RUN apt-get install -y python3-venv vim libgl1-mesa-dev git
 
 RUN pip install --upgrade pip
 RUN pip install poetry
