@@ -7,7 +7,7 @@ from .search_xml_profile import generate_target_csv
 
 
 def classification_set(target_dir, data_list, class_names):
-    IMAGE_EXTENTINS = ['.jpg', '.png']
+    IMAGE_EXTENTINS = ['.jpg', '.png', '.bmp']
 
     annotations = list()
     for class_id, class_name in enumerate(class_names):

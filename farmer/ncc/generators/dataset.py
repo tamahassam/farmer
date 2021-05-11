@@ -237,4 +237,3 @@ class pytorchClassificationDataset(data.Dataset):
         label = self.image_util.cast_to_onehot(label)
 
         return img_transformed, label
-        
