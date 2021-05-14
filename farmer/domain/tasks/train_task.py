@@ -7,7 +7,7 @@ from farmer.ncc import schedulers, pytorch_training_api
 from optuna.integration import TFKerasPruningCallback
 
 import torch
-from torch inport nn
+from torch import nn
 from torch.utils.data import DataLoader
 from torch.cuda.amp import GradScaler
 
@@ -49,8 +49,8 @@ class TrainTask:
 
                 sequence_args.update(
                     annotations=validation_set,
-                    mean=np.zeros(3),
-                    std=np.ones(3),
+                    # mean=np.zeros(3),
+                    # std=np.ones(3),
                     augmentation=[]
                 )
                 valid_set = ncc.generators.ClassificationDataset(**sequence_args)
@@ -143,7 +143,7 @@ class TrainTask:
             elif self.config.task == ncc.tasks.Task.CLASSIFICATION:
                 if self.config.input_data_type == "video":
                     # result_dir/model/
-                    if self.config.framework == "tensorflow"
+                    if self.config.framework == "tensorflow":
                         batch_model_path = os.path.join(
                             self.config.model_path, "batch_model.h5")
                     elif self.config.framework == "pytorch":
@@ -246,6 +246,8 @@ class TrainTask:
             return model
 
         elif self.config.framework == "pytorch":
+            pass
+            '''
             train_gen = DataLoader(
                 train_dataset,
                 batch_size=self.config.train_params.batch_size,
@@ -281,7 +283,7 @@ class TrainTask:
                     torch.save(model.state_dict(), "last_model.pth")
                     del model, optimizer, train_loader, val_loader, scaler
                     torch.cuda.empty_cache()
-
+        '''
 
     def _do_save_model_task(self, model):
         # result_dir/model/

@@ -1,4 +1,5 @@
 from efficientnet.tfkeras import EfficientNetB7
+# from efficientnet.keras import EfficientNetB7
 # from efficientnet.tfkeras import center_crop_and_resize, preprocess_input
 
 import tensorflow as tf

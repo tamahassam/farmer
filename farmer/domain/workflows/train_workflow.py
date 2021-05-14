@@ -11,6 +11,8 @@ from ..tasks.output_result_task import OutputResultTask
 from ..model.task_model import Task
 import tensorflow as tf
 
+import pandas as pd
+
 import torch
 import torch.nn as nn
 import torch.backends.cudnn as cudnn
@@ -115,6 +117,10 @@ class TrainWorkflow(AbstractImageAnalyzer):
             )
         print("DONE")
         print(eval_report)
+
+        # rep = classification_report(gt_arg, aaa_arg, digits=4, output_dict=True)
+        eval_report_df = pd.DataFrame(eval_report).T
+        eval_report_df.to_csv(f"{self._config.info_path}/eval_report.csv")
 
         return eval_report
 

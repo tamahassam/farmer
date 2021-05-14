@@ -76,6 +76,8 @@ class ClassificationDataset:
             annotations: list,
             input_shape: Tuple[int, int],
             nb_classes: int,
+            mean: list,
+            std: list,
             augmentation: list = list(),
             input_data_type: str = "image",
             **kwargs
@@ -86,6 +88,8 @@ class ClassificationDataset:
         self.image_util = ImageUtil(nb_classes, input_shape)
         self.augmentation = augmentation
         self.input_data_type = input_data_type
+        self.mean = mean
+        self.std = std
 
     def __getitem__(self, i):
 
@@ -103,6 +107,11 @@ class ClassificationDataset:
             # BGR -> RGB
             input_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
 
+            # 背景の黒を消す
+            _width = input_image.shape[1]
+            width_to_remove = round(_width * 0.05)
+            input_image = input_image[:, width_to_remove:-width_to_remove]
+
         elif self.input_data_type == "image":
             # image data [image_path]
             input_image = self.image_util.read_image(input_file[0])
@@ -111,6 +120,10 @@ class ClassificationDataset:
         input_image = self.image_util.resize(input_image, anti_alias=True)
         input_image = self.image_util.normalization(input_image)
         label = self.image_util.cast_to_onehot(label)
+
+        # 平均を引いて標準偏差で割る
+        if self.mean and self.std:
+            input_image = (input_image - self.mean) / self.std
 
         # apply augmentations
         if self.augmentation and len(self.augmentation) > 0:
@@ -237,4 +250,3 @@ class pytorchClassificationDataset(data.Dataset):
         label = self.image_util.cast_to_onehot(label)
 
         return img_transformed, label
-        

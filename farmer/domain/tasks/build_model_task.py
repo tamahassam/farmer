@@ -52,11 +52,12 @@ class BuildModelTask:
             mobilenet_shape_condition = height >= 32 and width >= 32
 
             if self.config.framework == "pytorch":
-                model = model = pytorchImgClassifier(
-                    model_arch=model_name,
-                    n_class=nb_classes,
-                    pretrained=True
-                    )
+                pass
+                #model = models.pytorch_models.pytorchImgClassifier(
+                #    model_arch=model_name,
+                #    n_class=nb_classes,
+                #    pretrained=True,
+                #    )
 
             elif model_name == "xception" and xception_shape_condition:
                 model = models.xception(
@@ -104,6 +105,14 @@ class BuildModelTask:
                 model = models.resnest(
                     nb_classes=nb_classes,
                     # model_name=model_name,
+                    height=height,
+                    width=width,
+                )
+
+            elif model_name.startswith('vit'):
+                model = models.ViT(
+                    model_name=model_name,
+                    nb_classes=nb_classes,
                     height=height,
                     width=width,
                 )
@@ -219,7 +228,7 @@ class BuildModelTask:
                 optimizer = keras.optimizers.SGD(
                     lr=learning_rate,
                     momentum=0.9,
-                    decay=self.config.train_params.opt_decay
+                    # decay=self.config.train_params.opt_decay
                 )
 
             loss_funcs = loss["functions"]
@@ -281,5 +290,5 @@ class BuildModelTask:
 
         elif self.config.framework == "pytorch":
             pass
-        
+
         return model

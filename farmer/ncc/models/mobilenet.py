@@ -1,6 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
-from tensorflow.keras.applications.mobilenet import MobileNet
+# from tensorflow.keras.applications.mobilenet import MobileNet
+from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras.models import Model
 
 import pretrainedmodels
@@ -9,7 +10,7 @@ import pretrainedmodels
 def mobilenet(nb_classes, height=244, width=244, framework="tensorflow"):
     if framework == "tensorflow":
         with tf.device("/cpu:0"):
-            base_model = MobileNet(
+            base_model = MobileNetV2(
                 input_shape=(height, width, 3),
                 weights='imagenet',
                 include_top=False

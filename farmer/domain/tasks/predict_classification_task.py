@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import csv
 from farmer import ncc
 from sklearn.metrics import classification_report
@@ -22,6 +23,8 @@ class PredictClassificationTask:
             annotations=annotation_set,
             input_shape=(self.config.height, self.config.width),
             nb_classes=self.config.nb_classes,
+            mean=self.config.mean,
+            std=self.config.std,
             augmentation=[],
             train_colors=self.config.train_colors,
             input_data_type=self.config.input_data_type
@@ -31,6 +34,7 @@ class PredictClassificationTask:
         return dataset, generator
 
     def _do_classification_predict_task(self, model, dataset, generator):
+
         prediction = model.predict(
             generator,
             steps=len(generator),
